@@ -1,0 +1,101 @@
+version: '3.7'
+
+services:
+
+  openldap:
+    container_name: openldap
+    image: docker.io/osixia/openldap:1.5.0
+    restart: always
+    ports:
+      - "3389:389"
+      - "6636:636"
+    command: [--copy-service]
+    volumes:
+    - ./openldap/ldap-example-users.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/ldap-example-users.ldif:bind
+    networks:
+      - sso
+
+  psql_sso:
+    container_name: psql_sso
+    image: registry.redhat.io/rhel8/postgresql-12:1-72.1626836556
+    restart: always
+    ports:
+      - "4432:4432"
+    environment:
+      PGPORT: 4432
+      POSTGRESQL_USER: sso
+      POSTGRESQL_PASSWORD: sso
+      POSTGRESQL_DATABASE: sso
+      POSTGRESQL_MAX_PREPARED_TRANSACTIONS: 10
+      SCRIPT_DIR: /opt/sql
+    volumes:
+      - ./sso/db/sso-psql.conf:/opt/app-root/src/postgresql-cfg/sso-psql.conf:bind
+    networks:
+      - sso
+
+  sso:
+    container_name: sso
+
+    # https://github.com/redhat-na-ssa/keycloak_customizations_quickstart/blob/main/etc/sso/Dockerfile
+    image: quay.io/jbride/keycloak:18.0.0-5-psql
+
+    restart: always
+    ports:
+      - "4443:4443"
+      - "4080:4080"
+    command: [start-dev]
+    environment:
+
+      # Add the following entry in your /etc/hosts:  127.0.0.1  sso.local
+      KC_HOSTNAME: sso.local
+
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB_URL: 'jdbc:postgresql://psql_sso:4432/sso'
+      KC_DB_USERNAME: sso
+      KC_DB_PASSWORD: sso
+      JAVA_OPTS_APPEND: -Dkeycloak.migration.strategy=IGNORE_EXISTING -Dkeycloak.import=/opt/ldaprealm.json
+      KC_HTTP_PORT: 4080
+      KC_HTTPS_PORT: 4443
+    volumes:
+      - ./sso/ldaprealm.json:/opt/ldaprealm.json:bind
+    depends_on:
+      - psql_sso
+      - openldap
+    networks:
+      - sso
+
+  minio-compose:
+    container_name: minio-compose
+    image: docker.io/minio/minio:RELEASE.2022-09-17T00-09-45Z.fips
+    command:
+      - server
+      - '/data'
+      - '--console-address'
+      - ':9001'
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_SERVER_URL: 'http://127.0.0.1'
+
+      MINIO_IDENTITY_OPENID_CONFIG_URL: 'http://sso:4080/realms/ldap-demo/.well-known/openid-configuration'
+      MINIO_IDENTITY_OPENID_REDIRECT_URI: 'http://localhost:9001'
+      MINIO_IDENTITY_OPENID_CLIENT_ID: ldap-app
+      MINIO_IDENTITY_OPENID_CLAIM_NAME: policy
+
+#      MINIO_NOTIFY_ELASTICSEARCH_ENABLE: 'false'
+#      MINIO_NOTIFY_ELASTICSEARCH_URL: wer
+#      MINIO_NOTIFY_ELASTICSEARCH_INDEX: wer
+#      MINIO_NOTIFY_ELASTICSEARCH_FORMAT: wer
+    depends_on:
+      - sso
+    networks:
+      - sso
+
+networks:
+  default:
+    driver: bridge
+  sso:
+    driver: bridge
