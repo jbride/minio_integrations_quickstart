@@ -147,6 +147,20 @@
           }
         },
         {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "foo",
+            "access.token.claim": "true",
+            "id.token.claim" : "true",
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String",
+            "multivalued": "true"
+          }
+        },
+        {
           "name": "policy",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",
@@ -320,6 +334,19 @@
         "read.only" : "false",
         "always.read.value.from.ldap" : "true",
         "is.binary.attribute" : "true"
+      }
+    },
+    {
+      "name" : "policy",
+      "federationMapperType" : "user-attribute-ldap-mapper",
+      "federationProviderDisplayName" : "ldap-apacheds",
+      "config" : {
+        "ldap.attribute" : "policy",
+        "user.model.attribute" : "policy",
+        "is.mandatory.in.ldap" : "false",
+        "read.only" : "false",
+        "always.read.value.from.ldap" : "true",
+        "is.binary.attribute" : "false"
       }
     },
     {

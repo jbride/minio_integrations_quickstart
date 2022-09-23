@@ -86,15 +86,17 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_SERVER_URL: 'http://127.0.0.1'
+
+      # Used by minio console to invoke minio REST APIs
+      MINIO_SERVER_URL: 'http://localhost:9000'
 
       # https://min.io/docs/minio/linux/operations/external-iam/configure-openid-external-identity-management.html?ref=docs-redirect#set-the-openid-configuration-settings
       MINIO_IDENTITY_OPENID_CONFIG_URL: 'http://sso:4080/realms/ldap-demo/.well-known/openid-configuration'
-      MINIO_IDENTITY_OPENID_REDIRECT_URI: 'http://localhost:9001'
+      MINIO_IDENTITY_OPENID_REDIRECT_URI: 'http://localhost:9001/oauth_callback'
       MINIO_IDENTITY_OPENID_CLIENT_ID: ldap-app
       MINIO_IDENTITY_OPENID_CLIENT_SECRET: avqeuje9yGOG37H1rbGm8I4qI7ht0ux1
       MINIO_IDENTITY_OPENID_CLAIM_NAME: policy
-      MINIO_IDENTITY_OPENID_SCOPES: 'openid,profile,email'
+      MINIO_IDENTITY_OPENID_SCOPES: 'openid'
 
 #      MINIO_NOTIFY_ELASTICSEARCH_ENABLE: 'false'
 #      MINIO_NOTIFY_ELASTICSEARCH_URL: wer

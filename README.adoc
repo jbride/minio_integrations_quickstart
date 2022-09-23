@@ -27,12 +27,12 @@ export MINIO_ROUTE=http://localhost:9000
 -----
 TKN=$(curl -X POST "$ACCESS_TOKEN_URL" \
             -H "Content-Type: application/x-www-form-urlencoded" \
-            -d "username=jbride" \
-            -d "password=ratwater" \
+            -d "username=minioAdmin" \
+            -d "password=minio" \
             -d "grant_type=password" \
             -d "client_id=$SSO_CLIENT_ID" \
             -d "client_secret=$SSO_CLIENT_SECRET" \
-            -d "scope=openid,profile,email" \
+            -d "scope=openid" \
             | sed 's/.*access_token":"//g' | sed 's/".*//g')
 
 $ echo $TKN
@@ -45,10 +45,7 @@ NOTE:  By setting a `scope=openid`, the OIDC _id_token_ is also included in the 
 These roles can be visualized as follows:
 +
 -----
-$ jq -R 'split(".") | .[1] | @base64d | fromjson' <<< $TKN | jq .realm_access.roles
+$ jq -R 'split(".") | .[1] | @base64d | fromjson' <<< $TKN | jq -r .policy
 
-[
-  "ldap-user",
-  "ldap-admin"
-]
+consoleAdmin
 -----
