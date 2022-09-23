@@ -1,0 +1,54 @@
+
+
+==== Environment Variables
+
+
+. Set the following environment variables with values similar to the following:
++
+-----
+export RHSSO_HOST=sso.local
+export RHSSO_URL=http://$RHSSO_HOST:4080
+export RHSSO_MASTER_PASSWD=admin
+export REALM_ID=ldap-demo
+export SSO_CLIENT_ID=ldap-app
+export SSO_CLIENT_SECRET=avqeuje9yGOG37H1rbGm8I4qI7ht0ux1
+export ACCESS_TOKEN_URL="$RHSSO_URL/realms/$REALM_ID/protocol/openid-connect/token"
+export MINIO_ROUTE=http://localhost:9000
+-----
+
+. Add the following entry to your `/etc/hosts`:
++
+-----
+127.0.0.1   sso.local
+-----
+
+. Retrieve an OAuth2 _access token_ using OAuth2 link:https://tools.ietf.org/html/rfc6749#section-4.3[Resource Owner Password Credentials] flow :
++
+-----
+TKN=$(curl -X POST "$ACCESS_TOKEN_URL" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "username=jbride" \
+            -d "password=ratwater" \
+            -d "grant_type=password" \
+            -d "client_id=$SSO_CLIENT_ID" \
+            -d "client_secret=$SSO_CLIENT_SECRET" \
+            -d "scope=openid,profile,email" \
+            | sed 's/.*access_token":"//g' | sed 's/".*//g')
+
+$ echo $TKN
+-----
++
+NOTE:  By setting a `scope=openid`, the OIDC _id_token_ is also included in the response.
+
+. By setting _fullScopeAllowed=true_ in the SSO client, all roles assocated with an authenticated user will be included in the access token.
++
+These roles can be visualized as follows:
++
+-----
+$ jq -R 'split(".") | .[1] | @base64d | fromjson' <<< $TKN | jq .realm_access.roles
+
+[
+  "ldap-user",
+  "ldap-admin"
+]
+-----
