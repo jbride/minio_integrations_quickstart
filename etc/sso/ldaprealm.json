@@ -32,22 +32,20 @@
       "bearerOnly": true
     },
     {
-      "clientId": "ldap-app",
+      "clientId": "minio-oidc",
       "enabled": true,
-      "baseUrl": "/ldap-portal",
+      "baseUrl": "/implement-me",
       "redirectUris": [
-        "/ldap-portal/*",
         "http://localhost:9001/*"
       ],
       "webOrigins":[
         "+"
-
       ],
-      "adminUrl": "/ldap-portal",
+      "adminUrl": "/implement-me",
       "secret": "avqeuje9yGOG37H1rbGm8I4qI7ht0ux1",
       "fullScopeAllowed": true,
       "directAccessGrantsEnabled":true,
-      "serviceAccountsEnabled": true,
+      "serviceAccountsEnabled": false,
       "publicClient":false,
       "protocolMappers": [
         {
@@ -172,6 +170,158 @@
             "access.token.claim": "true",
             "claim.name": "policy",
             "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "minio-oauth",
+      "enabled": true,
+      "baseUrl": "/implement-me",
+      "webOrigins":[
+        "+"
+      ],
+      "adminUrl": "/implement-me",
+      "secret": "avqeuje9yGOG37H1rbGm8I4qI7ht0ux1",
+      "fullScopeAllowed": true,
+      "directAccessGrantsEnabled":true,
+      "serviceAccountsEnabled": true,
+      "publicClient":false,
+      "protocolMappers": [
+        {
+          "protocolMapper" : "oidc-usermodel-property-mapper",
+          "protocol" : "openid-connect",
+          "name" : "username",
+          "config" : {
+            "Claim JSON Type" : "String",
+            "user.attribute" : "username",
+            "claim.name" : "preferred_username",
+            "id.token.claim" : "true",
+            "access.token.claim" : "true"
+          }
+        },
+        {
+          "protocolMapper" : "oidc-full-name-mapper",
+          "protocol" : "openid-connect",
+          "name" : "full name",
+          "config" : {
+            "id.token.claim" : "true",
+            "access.token.claim" : "true"
+          }
+        },
+        {
+          "protocolMapper" : "oidc-usermodel-property-mapper",
+          "protocol" : "openid-connect",
+          "name" : "given name",
+          "config" : {
+            "Claim JSON Type" : "String",
+            "user.attribute" : "firstName",
+            "claim.name" : "given_name",
+            "id.token.claim" : "true",
+            "access.token.claim" : "true"
+          }
+        },
+        {
+          "protocolMapper" : "oidc-usermodel-property-mapper",
+          "protocol" : "openid-connect",
+          "name" : "family name",
+          "config" : {
+            "Claim JSON Type" : "String",
+            "user.attribute" : "lastName",
+            "claim.name" : "family_name",
+            "id.token.claim" : "true",
+            "access.token.claim" : "true"
+          }
+        },
+        {
+          "protocolMapper" : "oidc-usermodel-property-mapper",
+          "protocol" : "openid-connect",
+          "name" : "email",
+          "config" : {
+            "Claim JSON Type" : "String",
+            "user.attribute" : "email",
+            "claim.name" : "email",
+            "id.token.claim" : "true",
+            "access.token.claim" : "true"
+          }
+        },
+        {
+          "protocolMapper" : "oidc-usermodel-attribute-mapper",
+          "protocol" : "openid-connect",
+          "name" : "postal code",
+          "config" : {
+            "Claim JSON Type" : "String",
+            "user.attribute" : "postal_code",
+            "claim.name" : "postal_code",
+            "multivalued": "true",
+            "id.token.claim" : "true",
+            "access.token.claim" : "true"
+          }
+        },
+        {
+          "protocolMapper" : "oidc-usermodel-attribute-mapper",
+          "protocol" : "openid-connect",
+          "name" : "street",
+          "config" : {
+            "Claim JSON Type" : "String",
+            "user.attribute" : "street",
+            "claim.name" : "street",
+            "multivalued": "false",
+            "id.token.claim" : "true",
+            "access.token.claim" : "true"
+          }
+        },
+        {
+          "protocolMapper" : "oidc-usermodel-attribute-mapper",
+          "protocol" : "openid-connect",
+          "name" : "picture",
+          "config" : {
+            "Claim JSON Type" : "String",
+            "user.attribute" : "picture",
+            "claim.name" : "picture",
+            "multivalued": "false",
+            "id.token.claim" : "true",
+            "access.token.claim" : "true"
+          }
+        },
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "foo",
+            "access.token.claim": "true",
+            "id.token.claim" : "true",
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String",
+            "multivalued": "true"
+          }
+        },
+        {
+          "name": "policy",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.value": "consoleAdmin",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "policy",
+            "jsonType.label": "String",
+            "access.tokenResponse.claim": "false"
+          }
+        },
+        {
+          "name": "audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "minio-oidc",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
           }
         }
       ]

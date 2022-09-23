@@ -1,0 +1,31 @@
+== Local Env
+
+. Create and populate _.env_ file in root of this project similar to the following:
++
+-----
+org.acme.minIOendpointUrl=http://127.0.0.1:9000
+org.acme.minIObucketName=xxxx
+org.acme.minIOobjectPath=/xxx/yyyy/zzz.jpeg
+org.acme.minIOobjectTags=type:photo,family:true,year:2022,numPeople:3
+
+# Service account
+#org.acme.minIOaccessKey=xxxx
+#org.acme.minIOsecretKey=xxxx
+
+# oauth client credentials
+org.acme.oauth.idpEndpoint=http://sso.local:4080/realms/ldap-demo/protocol/openid-connect/token
+org.acme.oauth.clientId=minio-oauth
+org.acme.oauth.clientSecret=xxxxx
+-----
+
+. Execute quarkus:dev
++
+-----
+$ mvn quarkus:dev
+-----
+
+. Execute:
++
+-----
+$ curl -X PUT localhost:8080/minio/lifecycle
+-----
