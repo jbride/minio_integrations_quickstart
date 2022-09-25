@@ -70,6 +70,10 @@ public class LifecyclResource {
     @ConfigProperty(name = "org.acme.minIObucketName")
     protected String minIOBucketName;
 
+    // https://min.io/docs/minio/linux/administration/concepts.html#can-i-organize-objects-in-a-folder-structure-within-buckets
+    @ConfigProperty(name = "org.acme.minIObucketPrefix")
+    protected String minIOBucketPrefix;
+
     @ConfigProperty(name = "org.acme.minIOobjectPath")
     protected String minIOobjectPath;
 
@@ -205,7 +209,7 @@ public class LifecyclResource {
             tags.put(pair[0], pair[1]);
         }
 
-        String objectName = "io.acme.object_"+random.nextInt(10000);
+        String objectName = minIOBucketPrefix+"/"+"io.acme.object_"+random.nextInt(10000);
         log.infov("uploading object to {0} with following # of tags: {1}", minIOBucketName, tags.size());
         ObjectWriteResponse owResponse = mClient.uploadObject(UploadObjectArgs.builder().bucket(minIOBucketName).object(objectName).filename(minIOobjectPath).tags(tags).build());
 

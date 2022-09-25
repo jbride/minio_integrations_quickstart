@@ -89,6 +89,8 @@ services:
 
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
+      MINIO_ACCESS_KEY: ZyaOC4NsFbCPI827
+      MINIO_SECRET_KEY: RkAEafzPzYKZo2An9F3UIQsvudj01d3z
 
       # Used by minio console to invoke minio REST APIs
       MINIO_SERVER_URL: 'http://localhost:9000'
