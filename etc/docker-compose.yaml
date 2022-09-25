@@ -68,19 +68,10 @@ services:
   minio-compose:
     container_name: minio-compose
     image: quay.io/jbride/minio:0.0.1
-    command:
-      - '-h'
-      - sso
-      - '-p'
-      - '4080'
-      - '-t'
-      - '30'
-      - '--'
-      - minio
-      - server
-      - '/data'
-      - '--console-address'
-      - ':9001'
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/wait-for-it.sh -h sso -p 4080 -t 30 -- /usr/bin/docker-entrypoint.sh minio server /data --console-address :9001
+      "
     restart: always
     ports:
       - "9000:9000"
@@ -89,8 +80,6 @@ services:
 
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
-      MINIO_ACCESS_KEY: ZyaOC4NsFbCPI827
-      MINIO_SECRET_KEY: RkAEafzPzYKZo2An9F3UIQsvudj01d3z
 
       # Used by minio console to invoke minio REST APIs
       MINIO_SERVER_URL: 'http://localhost:9000'
