@@ -120,6 +120,8 @@ TKN=$(curl -X POST "$ACCESS_TOKEN_URL" \
             -d "scope=openid" \
             | sed 's/.*access_token":"//g' | sed 's/".*//g')
 -----
++
+NOTE: This SSO client (as per $OAUTH_CLIENT_ID) is configured to allow link:https://www.keycloak.org/docs/latest/server_development/#authenticating-with-a-service-account[Authentication with a service account].
 
 . Invoke the MinIO Security Token Service (STS) _AssumeRoleWIthIdentity_ API endpoint to generate a temporary access credential using a JWT:app-name:
 +
